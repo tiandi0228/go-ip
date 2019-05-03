@@ -9,6 +9,7 @@ package lib
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/axgle/mahonia"
 	"github.com/parnurzeal/gorequest"
 	"math/rand"
 	"net/http"
@@ -17,13 +18,16 @@ import (
 	"time"
 )
 
+func decoderConvert(name string, body string) string {
+	return mahonia.NewDecoder(name).ConvertString(body)
+}
+
 // 获取代理ip
 func GetIp() {
 
 	for i := 1; i <= 3; i++ {
 
 		time.Sleep(5 * time.Second)
-		//url := "http://www.xiladaili.com/https/" + strconv.Itoa(i) + "/"
 		url := "http://ip.jiangxianli.com/?page=" + strconv.Itoa(i)
 		rand.Seed(time.Now().UnixNano())
 		index := rand.Intn(len(userAgents))
@@ -41,7 +45,38 @@ func GetIp() {
 		dom.Find(".table tbody tr").Each(func(i int, context *goquery.Selection) {
 			ss := context.Find("td").Eq(1).Text()
 			sss := context.Find("td").Eq(2).Text()
+			ssssss := context.Find("td").Eq(3).Text()
 			ssss := context.Find("td").Eq(4).Text()
+			sssss := context.Find("td").Eq(5).Text()
+
+			if ssssss == "高匿" {
+				if QueryIp(ss+":"+sss) == false {
+					GetXiCi(strings.ToLower(ssss) + "://" + ss + ":" + sss)
+					Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
+				}
+			}
+
+		})
+	}
+
+}
+
+// 获取西祠免费代理IP
+func GetXiCi(ip string) {
+	for i := 1; i <= 2; i++ {
+
+		url := "https://www.xicidaili.com/nn/" + strconv.Itoa(i) + "/"
+		rand.Seed(time.Now().UnixNano())
+		index := rand.Intn(len(userAgents))
+
+		_, body, _ := gorequest.New().Proxy(ip).Get(url).Set("User-Agent", UserAgents()[index]).End()
+
+		dom, _ := goquery.NewDocumentFromReader(strings.NewReader(decoderConvert("utf-8", body)))
+
+		dom.Find(".fl-table tbody tr").Each(func(i int, context *goquery.Selection) {
+			ss := context.Find("td").Eq(1).Text()
+			sss := context.Find("td").Eq(2).Text()
+			ssss := context.Find("td").Eq(3).Text()
 			sssss := context.Find("td").Eq(5).Text()
 
 			if QueryIp(ss+":"+sss) == false {
@@ -50,7 +85,6 @@ func GetIp() {
 
 		})
 	}
-
 }
 
 // 校验代理ip可用性
@@ -65,10 +99,12 @@ func Check() {
 
 		url := "http://httpbin.org/get"
 
-		_, _, errs := gorequest.New().Proxy(ips[i].Ip).Get(url).Set("User-Agent", UserAgents()[index]).Timeout(6 * time.Second).End()
+		proxyAddr := ips[i].Protocol + "://" + ips[i].Ip
+
+		_, _, errs := gorequest.New().Proxy(proxyAddr).Get(url).Set("User-Agent", UserAgents()[index]).Timeout(6 * time.Second).End()
 
 		if errs != nil {
-			fmt.Println("删除：", ips[i].Ip)
+			fmt.Println("删除：", proxyAddr)
 			DelIp(ips[i].Ip)
 		}
 
