@@ -23,6 +23,7 @@ func GetIp() {
 	for i := 1; i <= 3; i++ {
 
 		time.Sleep(5 * time.Second)
+		//url := "http://www.xiladaili.com/https/" + strconv.Itoa(i) + "/"
 		url := "http://ip.jiangxianli.com/?page=" + strconv.Itoa(i)
 		rand.Seed(time.Now().UnixNano())
 		index := rand.Intn(len(userAgents))
