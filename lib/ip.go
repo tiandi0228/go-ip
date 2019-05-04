@@ -13,6 +13,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -49,11 +50,11 @@ func GetIp() {
 			ssss := context.Find("td").Eq(4).Text()
 			sssss := context.Find("td").Eq(5).Text()
 
-			if ssssss == "高匿" {
-				if QueryIp(ss+":"+sss) == false {
-					GetXiCi(strings.ToLower(ssss) + "://" + ss + ":" + sss)
-					Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
-				}
+			if ssssss == "高匿" && QueryIp(ss+":"+sss) == false {
+				Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
+				GetXiCi()
+				GetKuaiSu()
+				GetGouBanJia()
 			}
 
 		})
@@ -62,14 +63,14 @@ func GetIp() {
 }
 
 // 获取西祠免费代理IP
-func GetXiCi(ip string) {
+func GetXiCi() {
 	for i := 1; i <= 2; i++ {
 
 		url := "https://www.xicidaili.com/nn/" + strconv.Itoa(i) + "/"
 		rand.Seed(time.Now().UnixNano())
 		index := rand.Intn(len(userAgents))
 
-		_, body, _ := gorequest.New().Proxy(ip).Get(url).Set("User-Agent", UserAgents()[index]).End()
+		_, body, _ := gorequest.New().Get(url).Set("User-Agent", UserAgents()[index]).End()
 
 		dom, _ := goquery.NewDocumentFromReader(strings.NewReader(decoderConvert("utf-8", body)))
 
@@ -85,6 +86,55 @@ func GetXiCi(ip string) {
 
 		})
 	}
+}
+
+// 获取快速免费代理IP
+func GetKuaiSu() {
+	for i := 1; i <= 10; i++ {
+
+		url := "http://www.superfastip.com/welcome/freeip/" + strconv.Itoa(i)
+		rand.Seed(time.Now().UnixNano())
+		index := rand.Intn(len(userAgents))
+
+		_, body, _ := gorequest.New().Get(url).Set("User-Agent", UserAgents()[index]).End()
+
+		dom, _ := goquery.NewDocumentFromReader(strings.NewReader(decoderConvert("utf-8", body)))
+
+		dom.Find(".table tbody tr").Each(func(i int, context *goquery.Selection) {
+			ss := context.Find("td").Eq(0).Text()
+			sss := context.Find("td").Eq(1).Text()
+			ssss := context.Find("td").Eq(3).Text()
+
+			if QueryIp(ss+":"+sss) == false {
+				Insert(ss+":"+sss, strings.ToLower(ssss), "")
+			}
+
+		})
+	}
+}
+
+// 获取全网代理ip
+func GetGouBanJia() {
+
+	url := "http://www.goubanjia.com/"
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(len(userAgents))
+
+	_, body, _ := gorequest.New().Get(url).Set("User-Agent", UserAgents()[index]).End()
+
+	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(decoderConvert("utf-8", body)))
+
+	dom.Find(".table tbody tr").Each(func(_ int, context *goquery.Selection) {
+		sf, _ := context.Find(".ip").Html()
+		tee := regexp.MustCompile("<pstyle=\"display:none;\">.?.?</p>").ReplaceAllString(strings.Replace(sf, " ", "", -1), "")
+		re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+		ss := re.ReplaceAllString(tee, "")
+		sss := context.Find("td:nth-child(3) > a").Text()
+		ssss := context.Find("td:nth-child(2) > a").Text()
+		if ssss == "高匿" && QueryIp(ss) == false {
+			Insert(ss, strings.ToLower(sss), "")
+		}
+	})
 }
 
 // 校验代理ip可用性
@@ -104,7 +154,7 @@ func Check() {
 		_, _, errs := gorequest.New().Proxy(proxyAddr).Get(url).Set("User-Agent", UserAgents()[index]).Timeout(6 * time.Second).End()
 
 		if errs != nil {
-			fmt.Println("删除：", proxyAddr)
+			//fmt.Println("删除：", proxyAddr)
 			DelIp(ips[i].Ip)
 		}
 
