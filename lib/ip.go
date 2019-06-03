@@ -51,8 +51,10 @@ func GetIp() {
 			ssss := context.Find("td").Eq(4).Text()
 			sssss := context.Find("td").Eq(5).Text()
 
-			if ssssss == "高匿" && QueryIp(ss+":"+sss) == false {
-				Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
+			if QueryIp(ss+":"+sss) == false {
+				if ssssss == "高匿" {
+					Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
+				}
 			}
 
 		})
