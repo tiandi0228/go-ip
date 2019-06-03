@@ -53,9 +53,6 @@ func GetIp() {
 
 			if ssssss == "高匿" && QueryIp(ss+":"+sss) == false {
 				Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
-				GetXiCi()
-				GetKuaiSu()
-				GetGouBanJia()
 			}
 
 		})

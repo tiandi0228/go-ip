@@ -23,6 +23,9 @@ func timer2() {
 		case <-timer2.C:
 			fmt.Println("采集IP")
 			lib.GetIp()
+			lib.GetXiCi()
+			lib.GetKuaiSu()
+			lib.GetGouBanJia()
 		}
 	}
 }
