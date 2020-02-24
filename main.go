@@ -6,8 +6,8 @@
 package main
 
 import (
-	"./lib"
 	"fmt"
+	"ip/lib"
 	"time"
 )
 

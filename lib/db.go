@@ -7,9 +7,9 @@
 package lib
 
 import (
-	db "../database"
-	"../models"
 	"fmt"
+	db "ip/database"
+	"ip/models"
 )
 
 // 添加ip
