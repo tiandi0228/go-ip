@@ -28,7 +28,7 @@ func GetIp() {
 	for i := 1; i <= 3; i++ {
 
 		time.Sleep(5 * time.Second)
-		url := "http://ip.jiangxianli.com/?page=" + strconv.Itoa(i)
+		url := "http://ip.jiangxianli.com/?page=" + strconv.Itoa(i) + "&country=中国"
 		rand.Seed(time.Now().UnixNano())
 		index := rand.Intn(len(userAgents))
 
@@ -44,16 +44,15 @@ func GetIp() {
 			fmt.Println(err)
 		}
 
-		dom.Find(".table tbody tr").Each(func(i int, context *goquery.Selection) {
-			ss := context.Find("td").Eq(1).Text()
-			sss := context.Find("td").Eq(2).Text()
-			ssssss := context.Find("td").Eq(3).Text()
-			ssss := context.Find("td").Eq(4).Text()
-			sssss := context.Find("td").Eq(5).Text()
-
-			if QueryIp(ss+":"+sss) == false {
+		dom.Find(".layui-table tbody tr").Each(func(i int, context *goquery.Selection) {
+			ip := context.Find("td").Eq(0).Text()
+			port := context.Find("td").Eq(1).Text()
+			ssssss := context.Find("td").Eq(2).Text()
+			ssss := context.Find("td").Eq(3).Text()
+			sssss := context.Find("td").Eq(4).Text()
+			if QueryIp(ip+":"+port) == false {
 				if ssssss == "高匿" {
-					Insert(ss+":"+sss, strings.ToLower(ssss), sssss)
+					Insert(ip+":"+port, strings.ToLower(ssss), sssss)
 				}
 			}
 
