@@ -6,36 +6,57 @@
 package main
 
 import (
-	"fmt"
+	"ip/getter"
 	"ip/lib"
+	"ip/models"
+	"log"
+	"runtime"
+	"sync"
 	"time"
 )
 
-func timer1() {
-	timer1 := time.NewTicker(6 * time.Second)
-	for {
-		select {
-		case <-timer1.C:
-			lib.Check()
-		}
-	}
-}
-
-func timer2() {
-	timer2 := time.NewTicker(2 * time.Minute)
-	for {
-		select {
-		case <-timer2.C:
-			fmt.Println("采集IP")
-			lib.GetIp()
-			lib.GetXiCi()
-			lib.GetKuaiSu()
-			lib.GetGouBanJia()
-		}
-	}
-}
-
 func main() {
-	go timer2()
-	timer1()
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	ipChan := make(chan *models.IP, 2000)
+
+	for i := 0; i < 50; i++ {
+		go func() {
+			for {
+				lib.Check()
+			}
+		}()
+	}
+
+	for {
+		if len(ipChan) < 100 {
+			go run(ipChan)
+		}
+		time.Sleep(10 * time.Minute)
+	}
+}
+
+func run(ipChan chan<- *models.IP) {
+
+	var wg sync.WaitGroup
+
+	var ips = []func() []*models.IP{
+		getter.GetIp,
+		getter.Get7yip,
+		getter.GetKD,
+		getter.GetGouBanJia,
+		getter.GetNiMaDaiLi,
+	}
+	for _, f := range ips {
+		wg.Add(1)
+		go func(f func() []*models.IP) {
+			temp := f()
+			for _, v := range temp {
+				log.Printf("[run] len of ipChan %v\n", v)
+				lib.Insert(v.Ip, v.Port, v.Protocol, v.Area)
+				ipChan <- v
+			}
+		}(f)
+	}
+	wg.Wait()
+	log.Println("所有采集完成.")
 }

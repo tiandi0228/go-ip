@@ -8,6 +8,13 @@ package models
 
 type IP struct {
 	Ip       string `xorm:"NOT NULL" json:"ip"`
+	Port     string `json:"port"`
 	Protocol string `json:"protocol"`
 	Area     string `json:"area"`
+}
+
+func NewIP() *IP {
+	return &IP{
+
+	}
 }

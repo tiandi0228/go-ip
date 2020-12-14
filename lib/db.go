@@ -13,11 +13,12 @@ import (
 )
 
 // 添加ip
-func Insert(ipAddr string, protocol string, area string) {
+func Insert(ipAddr string, port string, protocol string, area string) {
 
 	ip := models.IP{}
 
 	ip.Ip = ipAddr
+	ip.Port = port
 	ip.Protocol = protocol
 	ip.Area = area
 
@@ -25,11 +26,11 @@ func Insert(ipAddr string, protocol string, area string) {
 
 }
 
-func QueryIp(ipAddr string) bool {
+func QueryIp(ipAddr string, port string) bool {
 
 	ip := models.IP{}
 
-	res, err := db.Orm.Table("ip").Where("ip = ?", ipAddr).Get(&ip)
+	res, err := db.Orm.Table("ip").Where("ip = ? and port = ?", ipAddr, port).Get(&ip)
 
 	if err != nil {
 		fmt.Println(err)
@@ -60,7 +61,7 @@ func QueryList() []models.IP {
 }
 
 // 删除ip
-func DelIp(ip string) {
+func DelIp(ip string, port string) {
 
-	db.Orm.Query("delete from ip where ip = ?", ip)
+	db.Orm.Query("delete from ip where ip = ? and port = ?", ip, port)
 }
