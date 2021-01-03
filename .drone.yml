@@ -1,0 +1,38 @@
+kind: pipeline
+name: default
+type: docker
+
+steps:
+  - name: build
+    image: golang:1.15.2
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github_token
+    commands:
+      - make build
+    when:
+      branch: main
+      event: push
+
+  - name: build-image
+    image: plugins/docker
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github_token
+    when:
+      branch: main
+      event: push
+    settings:
+      registry: registry.cn-qingdao.aliyuncs.com
+      repo: registry.cn-qingdao.aliyuncs.com/tiandi0228/go-ip
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      build_args_from_env:
+        - GITHUB_TOKEN
+      dockerfile: Dockerfile
+      custom_dns: 119.29.29.29
+      mirror: https://jn2r34ot.mirror.aliyuncs.com
+      tags:
+        - 0.0.1
