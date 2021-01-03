@@ -20,7 +20,7 @@ steps:
       GITHUB_TOKEN:
         from_secret: github_token
     when:
-      branch: main
+      branch: master
       event: push
     settings:
       registry: registry.cn-qingdao.aliyuncs.com
