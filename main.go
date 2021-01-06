@@ -55,6 +55,7 @@ func run(ipChan chan<- *models.IP) {
 				lib.Insert(v.Ip, v.Port, v.Protocol, v.Area)
 				ipChan <- v
 			}
+			wg.Done()
 		}(f)
 	}
 	wg.Wait()
