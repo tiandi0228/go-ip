@@ -32,7 +32,7 @@ steps:
       build_args_from_env:
         - GITHUB_TOKEN
       dockerfile: Dockerfile
-      custom_dns: 119.29.29.29
-      mirror: https://jn2r34ot.mirror.aliyuncs.com
+#      custom_dns: 119.29.29.29
+      mirror: https://mirrors.cloud.tencent.com
       tags:
         - 0.0.1
