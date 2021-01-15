@@ -24,13 +24,13 @@ func GetIp() (result []*models.IP) {
 		rand.Seed(time.Now().UnixNano())
 		index := rand.Intn(len(lib.UserAgents()))
 
-		ips := lib.QueryList()
-		proxyAddr := ""
-		if len(ips) > 0 {
-			proxyAddr = ips[rand.Intn(len(ips))].Protocol + "://" + ips[rand.Intn(len(ips))].Ip + ":" + ips[rand.Intn(len(ips))].Port
-		}
+		//ips := lib.QueryList()
+		//proxyAddr := ""
+		//if len(ips) > 0 {
+		//	proxyAddr = ips[rand.Intn(len(ips))].Protocol + "://" + ips[rand.Intn(len(ips))].Ip + ":" + ips[rand.Intn(len(ips))].Port
+		//}
 
-		_, body, errs := gorequest.New().Proxy(proxyAddr).Get(url).Set("User-Agent", lib.UserAgents()[index]).Timeout(6 * time.Second).End()
+		_, body, errs := gorequest.New().Get(url).Set("User-Agent", lib.UserAgents()[index]).Timeout(6 * time.Second).End()
 
 		if errs != nil {
 			fmt.Println(errs)

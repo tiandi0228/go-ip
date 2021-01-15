@@ -6,6 +6,7 @@
 package main
 
 import (
+	"fmt"
 	"ip/getter"
 	"ip/lib"
 	"ip/models"
@@ -19,18 +20,16 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	ipChan := make(chan *models.IP, 2000)
 
-	for i := 0; i < 50; i++ {
-		go func() {
-			for {
-				lib.Check()
-			}
-		}()
-	}
+	go func() {
+		for {
+			fmt.Println("开始校验ip")
+			lib.Check()
+			time.Sleep(5 * time.Millisecond)
+		}
+	}()
 
 	for {
-		if len(ipChan) < 100 {
-			go run(ipChan)
-		}
+		go run(ipChan)
 		time.Sleep(10 * time.Minute)
 	}
 }
@@ -51,11 +50,10 @@ func run(ipChan chan<- *models.IP) {
 		go func(f func() []*models.IP) {
 			temp := f()
 			for _, v := range temp {
-				log.Printf("[run] len of ipChan %v\n", v)
 				lib.Insert(v.Ip, v.Port, v.Protocol, v.Area)
 				ipChan <- v
 			}
-			wg.Done()
+			defer wg.Done()
 		}(f)
 	}
 	wg.Wait()
