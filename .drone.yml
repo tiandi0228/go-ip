@@ -23,8 +23,8 @@ steps:
       branch: master
       event: push
     settings:
-      registry: ccr.ccs.tencentyun.com
-      repo: ccr.ccs.tencentyun.com/tiandi0228/go-ip
+      registry: registry.cn-qingdao.aliyuncs.com
+      repo: registry.cn-qingdao.aliyuncs.com/tiandi0228/go-ip
       username:
         from_secret: docker_username
       password:
@@ -32,7 +32,7 @@ steps:
       build_args_from_env:
         - GITHUB_TOKEN
       dockerfile: Dockerfile
-#      custom_dns: 119.29.29.29
-      mirror: https://mirrors.cloud.tencent.com
+      custom_dns: 119.29.29.29
+      mirror: https://jn2r34ot.mirror.aliyuncs.com
       tags:
         - 0.0.1
