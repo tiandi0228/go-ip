@@ -11,7 +11,7 @@ steps:
     commands:
       - make build
     when:
-      branch: main
+      branch: master
       event: push
 
   - name: build-image
@@ -23,8 +23,8 @@ steps:
       branch: master
       event: push
     settings:
-      registry: registry.cn-qingdao.aliyuncs.com
-      repo: registry.cn-qingdao.aliyuncs.com/tiandi0228/go-ip
+      registry: ccr.ccs.tencentyun.com
+      repo: ccr.ccs.tencentyun.com/tiandi0228/go-ip
       username:
         from_secret: docker_username
       password:
