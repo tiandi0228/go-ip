@@ -6,7 +6,6 @@
 package main
 
 import (
-	"fmt"
 	"ip/getter"
 	"ip/lib"
 	"ip/models"
@@ -22,7 +21,6 @@ func main() {
 
 	go func() {
 		for {
-			fmt.Println("开始校验ip")
 			lib.Check()
 			time.Sleep(5 * time.Millisecond)
 		}
@@ -30,7 +28,7 @@ func main() {
 
 	for {
 		go run(ipChan)
-		time.Sleep(10 * time.Minute)
+		time.Sleep(30 * time.Minute)
 	}
 }
 
